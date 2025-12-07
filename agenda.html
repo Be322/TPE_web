@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoctorCall - Agenda</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <nav class="menu-superior">
+        <div class="menu-container">
+            <div class="logo">
+                <span class="material-icons">medical_services</span>
+                DoctorCall
+            </div>
+            <ul class="menu-items">
+                <li><a href="index.html" class="active"><span class="material-icons">home</span> Home</a></li>
+                <li><a href="sobre-nos.html"><span class="material-icons">info</span> Sobre Nós</a></li>
+                <li><a href="medicos.html"><span class="material-icons">people</span> Médicos</a></li>
+                <li><a href="consultas.html" class="ativo"><span class="material-icons">event_note</span> Minhas Consultas</a></li>
+                <li class="login-item">
+                    <a href="login.html"><span class="material-icons">account_circle</span> Login</a>
+                </li>
+                <li class="logout-item">
+                    <a href="#" onclick="handleLogout(); return false;"><span class="material-icons">logout</span> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="secao">
+            <div class="agenda-top">
+                <div>
+                    <h2><span class="material-icons">calendar_today</span> Agendar Consulta</h2>
+                    <p class="muted" id="selected-info">Selecione uma data e horário</p>
+                </div>
+                <div id="doctor-info">
+
+                </div>
+            </div>
+
+            <div class="calendar-section">
+                <h3 class="section-title">Datas Disponíveis</h3>
+                <div class="days-grid" id="days">
+
+                </div>
+            </div>
+
+            <div class="slots-section">
+                <h3 class="section-title">Horários Disponíveis</h3>
+                <div class="slots" id="slots">
+
+                </div>
+            </div>
+
+            <div class="confirm-row">
+                <div class="actions">
+                    <button class="btn btn-ghost" onclick="history.back()">Voltar</button>
+                    <button class="btn btn-primary" id="confirm-btn" disabled>Confirmar Agendamento</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
