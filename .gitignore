@@ -1,0 +1,7 @@
+/node_modules
+package-lock.json
+.env
+access.log
+public/
+
+/home/lucas/api-crstore/API-Crstore
