@@ -1,49 +1,80 @@
-let profissionais = [
-  { id: 1, nome: 'Dr. Carlos Mendes', especialidade: 'Cardiologia', crm: '12345-SP', telefone: '(11) 3000-0001', email: 'carlos@clinica.com' },
-  { id: 2, nome: 'Dra. Ana Paula', especialidade: 'Dermatologia', crm: '23456-SP', telefone: '(11) 3000-0002', email: 'ana@clinica.com' },
-  { id: 3, nome: 'Dr. Roberto Lima', especialidade: 'Ortopedia', crm: '34567-SP', telefone: '(11) 3000-0003', email: 'roberto@clinica.com' },
-  { id: 4, nome: 'Dra. Juliana Costa', especialidade: 'Pediatria', crm: '45678-SP', telefone: '(11) 3000-0004', email: 'juliana@clinica.com' }
-];
+import db from '../database/db.js';
 
 const repository = {
   getAll() {
-    return profissionais;
+    const stmt = db.prepare('SELECT * FROM profissionais');
+    return stmt.all();
   },
 
   getById(id) {
-    return profissionais.find(p => p.id == id);
+    const stmt = db.prepare('SELECT * FROM profissionais WHERE id = ?');
+    return stmt.get(id);
   },
 
   findByEspecialidade(especialidade) {
-    return profissionais.filter(p => 
-      p.especialidade.toLowerCase().includes(especialidade.toLowerCase())
-    );
+    const stmt = db.prepare('SELECT * FROM profissionais WHERE especialidade LIKE ?');
+    return stmt.all(`%${especialidade}%`);
   },
 
   findByCrm(crm) {
-    return profissionais.find(p => p.crm === crm);
+    const stmt = db.prepare('SELECT * FROM profissionais WHERE crm = ?');
+    return stmt.get(crm);
   },
 
   create(profissional) {
-    const newId = Math.max(...profissionais.map(p => p.id), 0) + 1;
-    const newProfissional = { id: newId, ...profissional };
-    profissionais.push(newProfissional);
-    return newProfissional;
+    const stmt = db.prepare(`
+      INSERT INTO profissionais (nome, especialidade, crm, telefone, email) 
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    const result = stmt.run(
+      profissional.nome, 
+      profissional.especialidade, 
+      profissional.crm, 
+      profissional.telefone, 
+      profissional.email
+    );
+    return { id: result.lastInsertRowid, ...profissional };
   },
 
   update(id, profissionalData) {
-    const index = profissionais.findIndex(p => p.id == id);
-    if (index === -1) return null;
-    profissionais[index] = { ...profissionais[index], ...profissionalData };
-    return profissionais[index];
+    const fields = [];
+    const values = [];
+    
+    if (profissionalData.nome) {
+      fields.push('nome = ?');
+      values.push(profissionalData.nome);
+    }
+    if (profissionalData.especialidade) {
+      fields.push('especialidade = ?');
+      values.push(profissionalData.especialidade);
+    }
+    if (profissionalData.crm) {
+      fields.push('crm = ?');
+      values.push(profissionalData.crm);
+    }
+    if (profissionalData.telefone) {
+      fields.push('telefone = ?');
+      values.push(profissionalData.telefone);
+    }
+    if (profissionalData.email) {
+      fields.push('email = ?');
+      values.push(profissionalData.email);
+    }
+    
+    if (fields.length === 0) return this.getById(id);
+    
+    values.push(id);
+    const stmt = db.prepare(`UPDATE profissionais SET ${fields.join(', ')} WHERE id = ?`);
+    stmt.run(...values);
+    
+    return this.getById(id);
   },
 
   delete(id) {
-    const index = profissionais.findIndex(p => p.id == id);
-    if (index === -1) return false;
-    profissionais.splice(index, 1);
-    return true;
+    const stmt = db.prepare('DELETE FROM profissionais WHERE id = ?');
+    const result = stmt.run(id);
+    return result.changes > 0;
   }
 };
 
-module.exports = repository;
+export default repository;

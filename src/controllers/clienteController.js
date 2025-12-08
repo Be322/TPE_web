@@ -1,9 +1,9 @@
 // Controller - Camada de controle HTTP
 // Responsável por: receber requisições HTTP, validações superficiais, chamar services
 
-const service = require('../services/clienteService');
+import service from '../services/clienteService.js';
 
-module.exports = {
+export default {
   list(req, res) {
     try {
       const clientes = service.list();

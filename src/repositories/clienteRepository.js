@@ -1,46 +1,70 @@
-let clientes = [
-  { id: 1, nome: 'João Silva', cpf: '123.456.789-00', telefone: '(11) 98765-4321', email: 'joao@email.com' },
-  { id: 2, nome: 'Maria Santos', cpf: '987.654.321-00', telefone: '(11) 91234-5678', email: 'maria@email.com' },
-  { id: 3, nome: 'Pedro Oliveira', cpf: '456.789.123-00', telefone: '(11) 99876-5432', email: 'pedro@email.com' }
-];
+import db from '../database/db.js';
 
 const repository = {
   getAll() {
-    return clientes;
+    const stmt = db.prepare('SELECT * FROM clientes');
+    return stmt.all();
   },
 
   getById(id) {
-    return clientes.find(c => c.id == id);
+    const stmt = db.prepare('SELECT * FROM clientes WHERE id = ?');
+    return stmt.get(id);
   },
 
   findByName(nome) {
-    return clientes.find(c => c.nome.toLowerCase().includes(nome.toLowerCase()));
+    const stmt = db.prepare('SELECT * FROM clientes WHERE nome LIKE ? LIMIT 1');
+    return stmt.get(`%${nome}%`);
   },
 
   findByCpf(cpf) {
-    return clientes.find(c => c.cpf === cpf);
+    const stmt = db.prepare('SELECT * FROM clientes WHERE cpf = ?');
+    return stmt.get(cpf);
   },
 
   create(cliente) {
-    const newId = Math.max(...clientes.map(c => c.id), 0) + 1;
-    const newCliente = { id: newId, ...cliente };
-    clientes.push(newCliente);
-    return newCliente;
+    const stmt = db.prepare(`
+      INSERT INTO clientes (nome, cpf, telefone, email) 
+      VALUES (?, ?, ?, ?)
+    `);
+    const result = stmt.run(cliente.nome, cliente.cpf, cliente.telefone, cliente.email);
+    return { id: result.lastInsertRowid, ...cliente };
   },
 
   update(id, clienteData) {
-    const index = clientes.findIndex(c => c.id == id);
-    if (index === -1) return null;
-    clientes[index] = { ...clientes[index], ...clienteData };
-    return clientes[index];
+    const fields = [];
+    const values = [];
+    
+    if (clienteData.nome) {
+      fields.push('nome = ?');
+      values.push(clienteData.nome);
+    }
+    if (clienteData.cpf) {
+      fields.push('cpf = ?');
+      values.push(clienteData.cpf);
+    }
+    if (clienteData.telefone) {
+      fields.push('telefone = ?');
+      values.push(clienteData.telefone);
+    }
+    if (clienteData.email) {
+      fields.push('email = ?');
+      values.push(clienteData.email);
+    }
+    
+    if (fields.length === 0) return this.getById(id);
+    
+    values.push(id);
+    const stmt = db.prepare(`UPDATE clientes SET ${fields.join(', ')} WHERE id = ?`);
+    stmt.run(...values);
+    
+    return this.getById(id);
   },
 
   delete(id) {
-    const index = clientes.findIndex(c => c.id == id);
-    if (index === -1) return false;
-    clientes.splice(index, 1);
-    return true;
+    const stmt = db.prepare('DELETE FROM clientes WHERE id = ?');
+    const result = stmt.run(id);
+    return result.changes > 0;
   }
 };
 
-module.exports = repository;
+export default repository;

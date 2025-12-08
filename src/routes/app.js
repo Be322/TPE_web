@@ -1,60 +1,33 @@
 import express from 'express';
-import path from 'path';
-import session from 'express-session';
-import { createRequire } from 'module';
+import simpleLogger from '../middlewares/simpleLogger.js';
+import clienteController from '../controllers/clienteController.js';
+import profissionalController from '../controllers/profissionalController.js';
+import consultaController from '../controllers/consultaController.js';
 
-const require = createRequire(import.meta.url);
 const router = express.Router();
-const simpleLogger = require('../middlewares/simpleLogger');
-const requireAuth = require('../middlewares/requireAuth');
-const clienteController = require('../controllers/clienteController');
-const profissionalController = require('../controllers/profissionalController');
-const consultaController = require('../controllers/consultaController');
-const db = require('./config/config.js');
-
-// exemplo de query
-db.all("SELECT * FROM usuarios", [], (err, rows) => {
-    console.log(rows);
-});
-
-router.use(session({
-    name: "session.id",
-    secret: "segredo-super-segredo",
-    resave: false,
-    saveUninitialized: false,
-    rolling: true,
-    cookie: {
-        maxAge: 1000 * 60 * 10,
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax"
-    }
-}));
 
 router.use(simpleLogger);
 
-router.post('/login', clienteController.login);
+router.get('/clientes', clienteController.list);
+router.get('/clientes/:id', clienteController.getById);
+router.post('/clientes', clienteController.create);
+router.put('/clientes/:id', clienteController.update);
+router.delete('/clientes/:id', clienteController.delete);
 
-router.post('/logout', (req, res) => {
-    req.session.destroy();
-    res.json({ success: true });
-});
+router.get('/profissionais', profissionalController.list);
+router.get('/profissionais/:id', profissionalController.getById);
+router.get('/profissionais/especialidade', profissionalController.findByEspecialidade);
+router.post('/profissionais', profissionalController.create);
+router.put('/profissionais/:id', profissionalController.update);
+router.delete('/profissionais/:id', profissionalController.delete);
 
-router.get('/check-auth', (req, res) => {
-    if (req.session && req.session.clientId) {
-        return res.json({ authenticated: true, clientId: req.session.clientId });
-    }
-    res.status(401).json({ authenticated: false });
-});
-
-router.get('/clientes', requireAuth, clienteController.list);
-router.get('/clientes/:id', requireAuth, clienteController.getById);
-
-router.get('/profissionais', requireAuth, profissionalController.list);
-router.get('/profissionais/:id', requireAuth, profissionalController.getById);
-
-router.get('/consultas', requireAuth, consultaController.list);
-router.get('/consultas/:id', requireAuth, consultaController.getById);
-router.get('/minhas-consultas', requireAuth, consultaController.listByCliente);
+router.get('/consultas', consultaController.list);
+router.get('/consultas/:id', consultaController.getById);
+router.get('/consultas/cliente/:clienteId', consultaController.listByCliente);
+router.get('/consultas/dias-disponiveis', consultaController.getAvailableDays);
+router.get('/consultas/horarios', consultaController.getTimeSlots);
+router.post('/consultas', consultaController.create);
+router.put('/consultas/:id', consultaController.update);
+router.delete('/consultas/:id', consultaController.delete);
 
 export default router;

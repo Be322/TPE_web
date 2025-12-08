@@ -1,4 +1,4 @@
-const repo = require('../repositories/profissionalRepository');
+import repo from '../repositories/profissionalRepository.js';
 
 const service = {
   list() {
@@ -67,4 +67,4 @@ const service = {
   }
 };
 
-module.exports = service;
+export default service;

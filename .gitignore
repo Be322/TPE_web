@@ -4,4 +4,9 @@ package-lock.json
 access.log
 public/
 
+database.sqlite
+*.db
+*.sqlite
+*.sqlite3
+
 /home/lucas/api-crstore/API-Crstore

@@ -1,4 +1,4 @@
-const repo = require('../repositories/clienteRepository');
+import repo from '../repositories/clienteRepository.js';
 
 const service = {
   list() {
@@ -15,19 +15,6 @@ const service = {
       throw { status: 404, message: 'Cliente não encontrado' };
     }
     return item;
-  },
-
-  login(nome) {
-    if (!nome || nome.trim().length === 0) {
-      throw { status: 400, message: 'Nome é obrigatório' };
-    }
-    
-    const cliente = repo.findByName(nome);
-    if (!cliente) {
-      throw { status: 404, message: 'Cliente não encontrado' };
-    }
-    
-    return cliente;
   },
 
   create(clienteData) {
@@ -71,4 +58,4 @@ const service = {
   }
 };
 
-module.exports = service;
+export default service;

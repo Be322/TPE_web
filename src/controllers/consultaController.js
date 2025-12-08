@@ -1,6 +1,7 @@
-const service = require('../services/consultaService');
+import service from '../services/consultaService.js';
 
-module.exports = {
+
+export default {
   list(req, res) {
     try {
       const consultas = service.list();
@@ -12,9 +13,9 @@ module.exports = {
 
   listByCliente(req, res) {
     try {
-      const clienteId = req.session.clientId;
+      const clienteId = req.params.clienteId;
       if (!clienteId) {
-        return res.status(401).json({ error: 'Não autenticado' });
+        return res.status(400).json({ error: 'clienteId é obrigatório' });
       }
       
       const consultas = service.listByCliente(clienteId);
