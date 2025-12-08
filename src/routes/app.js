@@ -1,12 +1,21 @@
-const express = require('express');
+import express from 'express';
+import path from 'path';
+import session from 'express-session';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 const router = express.Router();
-const path = require('path');
-const session = require('express-session');
 const simpleLogger = require('../middlewares/simpleLogger');
 const requireAuth = require('../middlewares/requireAuth');
 const clienteController = require('../controllers/clienteController');
 const profissionalController = require('../controllers/profissionalController');
 const consultaController = require('../controllers/consultaController');
+const db = require('./config/config.js');
+
+// exemplo de query
+db.all("SELECT * FROM usuarios", [], (err, rows) => {
+    console.log(rows);
+});
 
 router.use(session({
     name: "session.id",
@@ -48,4 +57,4 @@ router.get('/consultas', requireAuth, consultaController.list);
 router.get('/consultas/:id', requireAuth, consultaController.getById);
 router.get('/minhas-consultas', requireAuth, consultaController.listByCliente);
 
-module.exports = router;
+export default router;

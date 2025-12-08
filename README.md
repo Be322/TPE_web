@@ -4,7 +4,11 @@
   * ```
     npm install
     ```
-  * Após a criação do arquivo rodar o comando
+  * Após isso
+    ```
+    npm install sqlite3
+  * 
+  Após a criação do arquivo rodar o comando
     ```
     npm run dev
     ```

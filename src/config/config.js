@@ -1,14 +1,15 @@
-import { Sequelize } from 'sequelize';
-import 'dotenv/config';
+// confg.js
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
-// eslint-disable-next-line import/prefer-default-export
-export const sequelize = new Sequelize(
-  process.env.POSTGRES_DB,
-  process.env.POSTGRES_USERNAME,
-  process.env.POSTGRES_PASSWORD,
-  {
-    host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORT,
-    dialect: 'postgres',
-  },
-);
+const DB_PATH = path.join(__dirname, 'database.sqlite');
+
+const db = new sqlite3.Database(DB_PATH, (err) => {
+    if (err) {
+        console.error("Erro ao conectar ao SQLite:", err);
+    } else {
+        console.log("SQLite conectado em", DB_PATH);
+    }
+});
+
+module.exports = db;
