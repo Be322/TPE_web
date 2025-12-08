@@ -6,9 +6,9 @@
 }
 
 :root {
-    --primary-color: #2563eb;
-    --background-color: #94B4FF;
-    --text-color: #1e293b;
+    --primary-color: #77AB59;
+    --background-color: #F0F7DA;
+    --text-color: #234D20;
     --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -140,7 +140,7 @@ body {
 }
 
 .card p {
-    color: #64748b;
+    color: #648b70;
     line-height: 1.6;
     margin-bottom: 1.5rem;
 }
