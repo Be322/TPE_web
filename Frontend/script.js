@@ -1,16 +1,4 @@
-(function() {
-    const protegidas = ['medicos.html', 'agenda.html', 'consultas.html'];
-    const pagina = location.pathname.split('/').pop();
-    
-    if (protegidas.includes(pagina)) {
-        document.documentElement.style.visibility = 'hidden';
-        
-        fetch('http://localhost:3000/check-auth', { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => data.authenticated ? document.documentElement.style.visibility = 'visible' : location.replace('/404-not-found'))
-            .catch(() => location.replace('/404-not-found'));
-    }
-})();
+
 
 async function handleLogout() {
     try {
