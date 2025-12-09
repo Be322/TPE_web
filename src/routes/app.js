@@ -10,9 +10,7 @@ router.use(simpleLogger);
 
 router.get('/clientes', clienteController.list);
 router.get('/clientes/:id', clienteController.getById);
-router.post('/clientes', clienteController.create);
-router.put('/clientes/:id', clienteController.update);
-router.delete('/clientes/:id', clienteController.delete);
+// Clientes: somente leitura
 
 router.get('/profissionais', profissionalController.list);
 router.get('/profissionais/:id', profissionalController.getById);
@@ -26,8 +24,6 @@ router.get('/consultas/:id', consultaController.getById);
 router.get('/consultas/cliente/:clienteId', consultaController.listByCliente);
 router.get('/consultas/dias-disponiveis', consultaController.getAvailableDays);
 router.get('/consultas/horarios', consultaController.getTimeSlots);
-router.post('/consultas', consultaController.create);
-router.put('/consultas/:id', consultaController.update);
-router.delete('/consultas/:id', consultaController.delete);
+// Consultas: somente leitura
 
 export default router;

@@ -4,7 +4,21 @@ import clienteRepo from '../repositories/clienteRepository.js';
 
 const service = {
   list() {
-    return repo.getAll();
+    const consultas = repo.getAll();
+    return consultas.map(c => {
+      const profissional = profissionalRepo.getById(c.profissionalId);
+      const cliente = clienteRepo.getById(c.clienteId);
+      return {
+        id: c.id,
+        medico: profissional?.nome || 'Médico não encontrado',
+        especialidade: profissional?.especialidade || 'N/A',
+        cliente: cliente?.nome || 'Cliente não encontrado',
+        data: c.data,
+        horario: c.horario,
+        status: c.status,
+        icone: 'medical_services'
+      };
+    });
   },
 
   listByCliente(clienteId) {
@@ -44,58 +58,6 @@ const service = {
     return item;
   },
 
-  create(consultaData) {
-    if (!consultaData.clienteId || !consultaData.profissionalId || !consultaData.data || !consultaData.horario) {
-      throw { status: 400, message: 'Cliente, Profissional, Data e Horário são obrigatórios' };
-    }
-
-    const cliente = clienteRepo.getById(consultaData.clienteId);
-    if (!cliente) {
-      throw { status: 404, message: 'Cliente não encontrado' };
-    }
-
-    const profissional = profissionalRepo.getById(consultaData.profissionalId);
-    if (!profissional) {
-      throw { status: 404, message: 'Profissional não encontrado' };
-    }
-
-    const horariosDisponiveis = repo.renderTimeSlots(consultaData.data);
-    const horarioEscolhido = horariosDisponiveis.find(h => h.horario === consultaData.horario);
-    
-    if (!horarioEscolhido || !horarioEscolhido.disponivel) {
-      throw { status: 409, message: 'Horário não disponível' };
-    }
-
-    return repo.create(consultaData);
-  },
-
-  update(id, consultaData) {
-    if (!id || isNaN(id)) {
-      throw { status: 400, message: 'ID inválido' };
-    }
-
-    const existe = repo.getById(id);
-    if (!existe) {
-      throw { status: 404, message: 'Consulta não encontrada' };
-    }
-
-    return repo.update(id, consultaData);
-  },
-
-  delete(id) {
-    if (!id || isNaN(id)) {
-      throw { status: 400, message: 'ID inválido' };
-    }
-
-    const existe = repo.getById(id);
-    if (!existe) {
-      throw { status: 404, message: 'Consulta não encontrada' };
-    }
-
-    const result = repo.delete(id);
-    return result;
-  },
-
   formatDate(date) {
     return repo.formatDate(date);
   },
@@ -104,9 +66,6 @@ const service = {
     return repo.nextAvailableDays(count);
   },
 
-  defaultTimeSlots() {
-    return repo.defaultTimeSlots();
-  },
 
   renderTimeSlots(date) {
     if (!date) {
@@ -115,21 +74,7 @@ const service = {
     return repo.renderTimeSlots(date);
   },
 
-  renderAgenda() {
-    return repo.renderAgenda();
-  },
-
-  renderCalendar(doctor) {
-    return repo.renderCalendar(doctor);
-  },
-
-  selectDate(element) {
-    return repo.selectDate(element);
-  },
-
-  selectTime(element) {
-    return repo.selectTime(element);
-  }
+  
 };
 
 export default service;

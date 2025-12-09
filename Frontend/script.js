@@ -51,7 +51,7 @@ async function carregarMedicos() {
 
 async function carregarConsultas() {
   try {
-    const res = await fetch('http://localhost:3000/minhas-consultas', { credentials: 'include' });
+    const res = await fetch('http://localhost:3000/consultas', { credentials: 'include' });
     consultas = await res.json();
   } catch (error) {
     console.error('Erro ao carregar consultas:', error);
@@ -115,7 +115,7 @@ async function renderDoctors() {
       <span class="material-icons doctor-icon">${doctor.icon}</span>
       <h3>${doctor.nome}</h3>
       <div class="doctor-info">
-        <p class="specialty">${doctor.especialidade} • ${doctor.expAnos} anos de experiência</p>
+        <p class="specialty">${doctor.especialidade}</p>
       </div>
       <button onclick="irParaAgenda('${encodeURIComponent(doctor.nome)}')" class="btn btn-primary">
         <span class="material-icons">event</span>

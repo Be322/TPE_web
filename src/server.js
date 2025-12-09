@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import morgan from 'morgan';
@@ -11,21 +10,13 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, '../access.log'),
-  { flags: 'a' },
-);
-
-const corsOptions = {
-  origin(origin, callback) {
-    callback(null, true);
-  },
-  methods: 'GET,PUT,PATCH,POST,DELETE',
+app.use(cors({
+  origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.use(morgan('combined', { stream: accessLogStream }));
+  optionsSuccessStatus: 200
+}));
+app.use(morgan('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/public', express.static('public'));
