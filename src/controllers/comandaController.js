@@ -1,24 +1,10 @@
-import service from '../services/pedidoService.js';
+import service from '../services/comandaService.js';
 
 export default {
   list(req, res) {
     try {
-      const consultas = service.list();
-      res.status(200).json(consultas);
-    } catch (err) {
-      res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
-    }
-  },
-
-  listByCliente(req, res) {
-    try {
-      const clienteId = req.params.clienteId;
-      if (!clienteId) {
-        return res.status(400).json({ error: 'clienteId é obrigatório' });
-      }
-      
-      const consultas = service.listByCliente(clienteId);
-      res.status(200).json(consultas);
+      const comandas = service.list();
+      res.status(200).json(comandas);
     } catch (err) {
       res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
     }
@@ -27,33 +13,37 @@ export default {
   getById(req, res) {
     try {
       const id = req.params.id;
-      const consulta = service.get(id);
-      res.status(200).json(consulta);
+      const comanda = service.get(id);
+      res.status(200).json(comanda);
     } catch (err) {
       res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
     }
   },
 
-  getAvailableDays(req, res) {
+  create(req, res) {
     try {
-      const count = req.query.count || 21;
-      const days = service.nextAvailableDays(parseInt(count));
-      res.status(200).json(days);
+      const comanda = service.create(req.body);
+      res.status(201).json(comanda);
     } catch (err) {
       res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
     }
   },
 
-  getTimeSlots(req, res) {
+  update(req, res) {
     try {
-      const date = req.query.date;
-      
-      if (!date) {
-        return res.status(400).json({ error: 'Data é obrigatória' });
-      }
+      const id = req.params.id;
+      const comanda = service.update(id, req.body);
+      res.status(200).json(comanda);
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
+    }
+  },
 
-      const slots = service.renderTimeSlots(date);
-      res.status(200).json(slots);
+  remove(req, res) {
+    try {
+      const id = req.params.id;
+      service.delete(id);
+      res.status(204).send();
     } catch (err) {
       res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
     }

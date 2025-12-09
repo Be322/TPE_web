@@ -2,35 +2,35 @@ import db from '../database/db.js';
 
 const cardapioRepository = {
   getAll() {
-    const stmt = db.prepare('SELECT * FROM cardapio');
+    const stmt = db.prepare('SELECT * FROM produtos');
     return stmt.all();
   },
 
   getById(id) {
-    const stmt = db.prepare('SELECT * FROM cardapio WHERE id = ?');
+    const stmt = db.prepare('SELECT * FROM produtos WHERE id = ?');
     return stmt.get(id);
   },
 
-  create({ nome, preco }) {
+  create({ nome, preco, categoria, descricao, imagem }) {
     const stmt = db.prepare(`
-      INSERT INTO cardapio (nome, preco)
-      VALUES (?, ?)
+      INSERT INTO produtos (nome, preco, categoria, descricao, imagem)
+      VALUES (?, ?, ?, ?, ?)
     `);
-    return stmt.run(nome, preco);
+    return stmt.run(nome, preco, categoria, descricao, imagem);
   },
 
-  update(id, { nome, preco }) {
+  update(id, { nome, preco, categoria, descricao, imagem }) {
     const stmt = db.prepare(`
-      UPDATE cardapio
-      SET nome = ?, preco = ?
+      UPDATE produtos
+      SET nome = ?, preco = ?, categoria = ?, descricao = ?, imagem = ?
       WHERE id = ?
     `);
 
-    return stmt.run(nome, preco, id);
+    return stmt.run(nome, preco, categoria, descricao, imagem, id);
   },
 
   delete(id) {
-    const stmt = db.prepare('DELETE FROM cardapio WHERE id = ?');
+    const stmt = db.prepare('DELETE FROM produtos WHERE id = ?');
     return stmt.run(id);
   }
 };

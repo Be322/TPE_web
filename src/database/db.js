@@ -84,9 +84,9 @@ const initDatabase = () => {
       VALUES (?, ?, ?, ?, ?)
     `);
 
-    stmt.run("Hambúrguer Artesanal", 25, "Lanches", "Pão brioche, carne 160g", "/img/hamburguer.jpg");
-    stmt.run("Pizza Marguerita", 49, "Pizzas", "Mussarela, tomate e manjericão", "/img/pizza.jpg");
-    stmt.run("Coca-Cola 350ml", 7, "Bebidas", "Refrigerante gelado", "/img/coca.jpg");
+    stmt.run("Hambúrguer Artesanal", 25, "Lanches", "Pão brioche, carne 160g", "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400");
+    stmt.run("Pizza Marguerita", 49, "Pizzas", "Mussarela, tomate e manjericão", "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400");
+    stmt.run("Coca-Cola 350ml", 7, "Bebidas", "Refrigerante gelado", "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400");
 
     console.log("🍔 Produtos padrão inseridos.");
   }

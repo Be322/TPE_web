@@ -1,10 +1,10 @@
-import service from '../services/clienteService.js';
+import service from '../services/cardapioService.js';
 
 export default {
   list(req, res) {
     try {
-      const clientes = service.list();
-      res.status(200).json(clientes);
+      const produtos = service.list();
+      res.status(200).json(produtos);
     } catch (err) {
       res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
     }
@@ -13,11 +13,39 @@ export default {
   getById(req, res) {
     try {
       const id = req.params.id;
-      const cliente = service.get(id);
-      res.status(200).json(cliente);
+      const produto = service.get(id);
+      res.status(200).json(produto);
     } catch (err) {
       res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
     }
   },
-  
+
+  create(req, res) {
+    try {
+      const produto = service.create(req.body);
+      res.status(201).json(produto);
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
+    }
+  },
+
+  update(req, res) {
+    try {
+      const id = req.params.id;
+      const produto = service.update(id, req.body);
+      res.status(200).json(produto);
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
+    }
+  },
+
+  remove(req, res) {
+    try {
+      const id = req.params.id;
+      service.delete(id);
+      res.status(204).send();
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Erro interno' });
+    }
+  }
 };

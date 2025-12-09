@@ -37,7 +37,7 @@ const clienteController = {
     }
   },
 
-  delete(req, res) {
+  remove(req, res) {
     try {
       const result = service.delete(req.params.id);
       res.json(result);
