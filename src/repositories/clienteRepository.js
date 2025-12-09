@@ -1,22 +1,58 @@
 import db from '../database/db.js';
 
-const repository = {
+const clienteRepository = {
   getAll() {
-    const stmt = db.prepare('SELECT * FROM clientes');
-    return stmt.all();
+    return db.prepare('SELECT * FROM clientes').all();
   },
 
   getById(id) {
-    const stmt = db.prepare('SELECT * FROM clientes WHERE id = ?');
-    return stmt.get(id);
+    return db.prepare('SELECT * FROM clientes WHERE id = ?').get(id);
   },
 
-  findByName(nome) {
-    const stmt = db.prepare('SELECT * FROM clientes WHERE nome LIKE ? LIMIT 1');
-    return stmt.get(`%${nome}%`);
+  findByDocumento(documento) {
+    return db.prepare('SELECT * FROM clientes WHERE documento = ?').get(documento);
   },
 
-  
+  create(data) {
+    const stmt = db.prepare(`
+      INSERT INTO clientes (nome, telefone, email, documento)
+      VALUES (?, ?, ?, ?)
+    `);
+
+    const result = stmt.run(
+      data.nome,
+      data.telefone || null,
+      data.email || null,
+      data.documento || null
+    );
+
+    return this.getById(result.lastInsertRowid);
+  },
+
+  update(id, data) {
+    const stmt = db.prepare(`
+      UPDATE clientes SET
+        nome = ?,
+        telefone = ?,
+        email = ?,
+        documento = ?
+      WHERE id = ?
+    `);
+
+    stmt.run(
+      data.nome,
+      data.telefone || null,
+      data.email || null,
+      data.documento || null,
+      id
+    );
+
+    return this.getById(id);
+  },
+
+  delete(id) {
+    return db.prepare('DELETE FROM clientes WHERE id = ?').run(id);
+  }
 };
 
-export default repository;
+export default clienteRepository;

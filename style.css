@@ -1,0 +1,156 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #ff3d3d;
+    --primary-dark: #cc2f2f;
+
+    --accent: #ff7b00;
+    --accent-dark: #e06900;
+
+    --bg-gradient: linear-gradient(135deg, #ff3d3d, #ff7b00);
+
+    --text-light: #fefefe;
+    --text-dark: #3a3a3a;
+
+    --radius-lg: 18px;
+    --radius-md: 12px;
+
+    --shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    overflow-x: hidden;
+}
+
+.top-menu {
+    width: 100%;
+    padding: 12px 30px;
+    background: var(--bg-gradient);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+}
+
+.top-menu ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.top-menu ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.top-menu ul li a:hover {
+    transform: scale(1.05);
+    color: #ffe29a;
+}
+
+.hero {
+    position: relative;
+    min-height: 100vh;
+    background-image: url("https://images.unsplash.com/photo-1504674900247-0877df9cc836");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+}
+
+.hero-flex {
+    position: relative;
+    display: flex;
+    width: 100%;
+    padding: 120px 50px 50px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hero-content h1 {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.hero-content p {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.login-box {
+    width: 320px;
+    padding: 25px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(6px);
+}
+
+.login-box h2 {
+    margin-bottom: 15px;
+}
+
+.login-box label {
+    font-size: 14px;
+    display: block;
+    margin-top: 10px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 4px;
+}
+
+.btn {
+    width: 100%;
+    background: #ffcc66;
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #ffd98f;
+}
+
+@media (max-width: 850px) {
+    .hero-flex {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .login-box {
+        margin-top: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 28px;
+    }
+}

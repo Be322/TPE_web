@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Página Inicial</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="top-menu">
+        <ul id="menuList">
+            <li><a href="home.html"><i class="fas fa-home"></i> Início</a></li>
+            <li class="menu-item"><a href="#"><i class="fas fa-utensils"></i> Cardápio</a></li>
+            <li class="menu-item"><a href="#"><i class="fas fa-shopping-cart"></i> Pedidos</a></li>
+            <li class="menu-item"><a href="#"><i class="fas fa-receipt"></i> Comanda</a></li>
+
+            <li id="logoutBtn" class="menu-item" style="margin-left:auto;">
+                <a href="#" onclick="logout()">
+                    <i class="fas fa-user"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="overlay"></div>
+
+        <div class="hero-flex">
+            <div class="hero-content">
+                <h1>Bem-vindo ao Sistema</h1>
+                <p>Escolha uma das opções acima para navegar.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const isLogged = localStorage.getItem("logado") === "1";
+
+        const protectedItems = document.querySelectorAll(".menu-item");
+
+        if (isLogged) {
+            protectedItems.forEach(item => item.style.display = "flex");
+        } else {
+            protectedItems.forEach(item => item.style.display = "none");
+        }
+
+        function logout() {
+            localStorage.removeItem("logado");
+            window.location.href = "index.html";
+        }
+    </script>
+
+</body>
+</html>

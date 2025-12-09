@@ -1,4 +1,4 @@
-import service from '../services/consultaService.js';
+import service from '../services/pedidoService.js';
 
 export default {
   list(req, res) {

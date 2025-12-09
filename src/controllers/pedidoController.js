@@ -1,4 +1,4 @@
-import service from '../services/profissionalService.js';
+import service from '../services/comandaService.js';
 
 export default {
   list(req, res) {

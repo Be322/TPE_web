@@ -1,29 +1,51 @@
-import express from 'express';
-import simpleLogger from '../middlewares/simpleLogger.js';
-import clienteController from '../controllers/clienteController.js';
-import profissionalController from '../controllers/profissionalController.js';
-import consultaController from '../controllers/consultaController.js';
+import { Router } from 'express';
 
-const router = express.Router();
+import simpleLogger from '../middlewares/simpleLogger.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+
+import clienteController from '../controllers/clienteController.js';
+import produtoController from '../controllers/produtoController.js';
+import pedidoController from '../controllers/pedidoController.js';
+import comandaController from '../controllers/comandaController.js';
+
+const router = Router();
 
 router.use(simpleLogger);
 
+router.get('/', (req, res) => {
+  res.send('API do Cardápio Digital funcionando!');
+});
+
+router.post('/login', authMiddleware.login);
+
+router.get('/logout', authMiddleware.logout)
+
+router.get('/check-auth', authMiddleware.checkAuth);
+
+router.use(authMiddleware.requireAuth);
+
 router.get('/clientes', clienteController.list);
-router.get('/clientes/:id', clienteController.getById);
-// Clientes: somente leitura
+router.get('/clientes/:id', clienteController.get);
+router.post('/clientes', clienteController.create);
+router.put('/clientes/:id', clienteController.update);
+router.delete('/clientes/:id', clienteController.remove);
 
-router.get('/profissionais', profissionalController.list);
-router.get('/profissionais/:id', profissionalController.getById);
-router.get('/profissionais/especialidade', profissionalController.findByEspecialidade);
-router.post('/profissionais', profissionalController.create);
-router.put('/profissionais/:id', profissionalController.update);
-router.delete('/profissionais/:id', profissionalController.delete);
+router.get('/produtos', produtoController.list);
+router.get('/produtos/:id', produtoController.get);
+router.post('/produtos', produtoController.create);
+router.put('/produtos/:id', produtoController.update);
+router.delete('/produtos/:id', produtoController.remove);
 
-router.get('/consultas', consultaController.list);
-router.get('/consultas/:id', consultaController.getById);
-router.get('/consultas/cliente/:clienteId', consultaController.listByCliente);
-router.get('/consultas/dias-disponiveis', consultaController.getAvailableDays);
-router.get('/consultas/horarios', consultaController.getTimeSlots);
-// Consultas: somente leitura
+router.get('/pedidos', pedidoController.list);
+router.get('/pedidos/:id', pedidoController.get);
+router.post('/pedidos', pedidoController.create);
+router.put('/pedidos/:id', pedidoController.update);
+router.delete('/pedidos/:id', pedidoController.remove);
+
+router.get('/comandas', comandaController.list);
+router.get('/comandas/:id', comandaController.get);
+router.post('/comandas', comandaController.create);
+router.put('/comandas/:id', comandaController.update);
+router.delete('/comandas/:id', comandaController.remove);
 
 export default router;
