@@ -19,13 +19,50 @@ const comandaService = {
   },
 
   create(data) {
-    const { nomeCliente, mesa } = data;
+    const { mesa, status } = data;
 
-    if (!nomeCliente || !mesa) {
-      throw { status: 400, message: 'Nome do cliente e mesa são obrigatórios' };
+    if (!mesa) {
+      throw { status: 400, message: 'Mesa é obrigatória' };
     }
 
-    return repo.create(data);
+    return repo.create({ mesa, status });
+  },
+
+  update(id, data) {
+    if (!id || isNaN(id)) {
+      throw { status: 400, message: 'ID inválido' };
+    }
+
+    const atual = repo.getById(id);
+    if (!atual) {
+      throw { status: 404, message: 'Comanda não encontrada' };
+    }
+
+    const mesa = data.mesa ?? atual.mesa;
+    const status = data.status ?? atual.status;
+
+    if (!mesa) {
+      throw { status: 400, message: 'Mesa é obrigatória' };
+    }
+
+    const dataFechamento = status === 'fechada' ? new Date().toISOString() : null;
+
+    repo.update({ id, mesa, status, dataFechamento });
+    return repo.getById(id);
+  },
+
+  delete(id) {
+    if (!id || isNaN(id)) {
+      throw { status: 400, message: 'ID inválido' };
+    }
+
+    const existe = repo.getById(id);
+    if (!existe) {
+      throw { status: 404, message: 'Comanda não encontrada' };
+    }
+
+    repo.delete(id);
+    return { ok: true };
   },
 
   addPedidoToComanda(data) {

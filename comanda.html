@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Comandas</title>
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+	<style>
+		.bg-hero {
+			background: url("https://images.unsplash.com/photo-1504674900247-0877df9cc836") center/cover fixed no-repeat;
+			position: relative;
+			min-height: 100vh;
+		}
+
+		.bg-hero::before {
+			content: '';
+			position: fixed;
+			inset: 0;
+			background: rgba(0, 0, 0, 0.65);
+			z-index: -1;
+		}
+
+		.comanda-container {
+			max-width: 1100px;
+			margin: 100px auto 50px;
+			padding: 0 20px 40px;
+		}
+
+		.comanda-header {
+			text-align: center;
+			margin-bottom: 30px;
+			color: #fdfdfd;
+		}
+
+		.comanda-header h1 {
+			font-size: 2.4em;
+			text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+		}
+
+		.comanda-header p {
+			margin-top: 8px;
+			color: #e8e8e8;
+			text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+		}
+
+		.grid-pedidos {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			gap: 18px;
+		}
+
+		.pedido-card {
+			background: rgba(255, 255, 255, 0.96);
+			border-radius: 16px;
+			padding: 18px;
+			box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+			backdrop-filter: blur(4px);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+		}
+
+		.pedido-top {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 10px;
+		}
+
+		.pedido-id {
+			font-weight: 700;
+			color: #222;
+		}
+
+		.chip-status {
+			padding: 6px 12px;
+			border-radius: 20px;
+			font-size: 0.9em;
+			font-weight: 600;
+			color: #0f5132;
+			background: #d1e7dd;
+		}
+
+		.pedido-body {
+			color: #444;
+			line-height: 1.5;
+		}
+
+		.pedido-body strong {
+			color: #111;
+		}
+
+		.pedido-footer {
+			margin-top: 12px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			color: #444;
+		}
+
+		.valor-total {
+			font-size: 1.1em;
+			font-weight: 700;
+			color: #198754;
+		}
+
+		.card-actions {
+			display: flex;
+			gap: 8px;
+			margin-top: 12px;
+		}
+
+		.btn-card {
+			padding: 8px 12px;
+			border-radius: 10px;
+			border: none;
+			cursor: pointer;
+			font-weight: 600;
+			transition: transform 0.1s ease, opacity 0.2s ease;
+		}
+
+		.btn-card:hover { transform: translateY(-1px); }
+
+		.btn-ghost { background: #e9ecef; color: #111; }
+		.btn-danger { background: #dc3545; color: #fff; }
+
+		.badge-small {
+			display: inline-block;
+			margin-top: 6px;
+			padding: 4px 8px;
+			border-radius: 8px;
+			background: #f1f3f5;
+			color: #333;
+			font-size: 0.85em;
+		}
+
+		.loading, .erro, .vazio {
+			text-align: center;
+			color: #f5f5f5;
+			padding: 40px 10px;
+			text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+		}
+
+		@media (max-width: 600px) {
+			.comanda-container {
+				margin-top: 120px;
+			}
+		}
+	</style>
+</head>
+<body class="bg-hero">
+
+	<nav class="top-menu">
+		<ul id="menuList">
+			<li><a href="home.html"><i class="fas fa-home"></i> Início</a></li>
+			<li class="menu-item"><a href="cardapio.html"><i class="fas fa-utensils"></i> Cardápio</a></li>
+			<li class="menu-item"><a href="comanda.html"><i class="fas fa-receipt"></i> Comanda</a></li>
+			<li id="logoutBtn" class="menu-item" style="margin-left:auto;">
+				<a href="#" onclick="logout()">
+					<i class="fas fa-user"></i> Logout
+				</a>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="comanda-container">
+		<div class="comanda-header">
+			<h1><i class="fas fa-receipt"></i> Comandas</h1>
+			<p>Visualize, edite ou exclua comandas</p>
+		</div>
+
+		<div id="loadingContainer" class="loading">
+			<i class="fas fa-spinner fa-spin"></i> Carregando comandas...
+		</div>
+
+		<div id="listaComandas" class="grid-pedidos" style="display:none;"></div>
+	</div>
+
+	<script>
+		const API_URL = 'http://localhost:3000';
+
+		const isLogged = localStorage.getItem('logado') === '1';
+		const protectedItems = document.querySelectorAll('.menu-item');
+
+		if (isLogged) {
+			protectedItems.forEach(item => item.style.display = 'flex');
+		} else {
+			protectedItems.forEach(item => item.style.display = 'none');
+			window.location.href = 'index.html';
+		}
+
+		function logout() {
+			localStorage.removeItem('logado');
+			window.location.href = 'index.html';
+		}
+
+		async function carregarComandas() {
+			const loading = document.getElementById('loadingContainer');
+			const lista = document.getElementById('listaComandas');
+
+			loading.style.display = 'block';
+			lista.style.display = 'none';
+			lista.innerHTML = '';
+
+			try {
+				const response = await fetch(`${API_URL}/comandas`);
+
+				if (!response.ok) {
+					throw new Error('Erro ao carregar comandas');
+				}
+
+				const comandas = await response.json();
+
+				loading.style.display = 'none';
+
+				if (!comandas || comandas.length === 0) {
+					lista.innerHTML = '<div class="vazio"><i class="fas fa-inbox"></i> Nenhuma comanda encontrada.</div>';
+					lista.style.display = 'block';
+					return;
+				}
+
+				comandas.forEach(comanda => {
+					const card = document.createElement('div');
+					card.className = 'pedido-card';
+
+					const dataAbertura = comanda.dataAbertura ? new Date(comanda.dataAbertura).toLocaleString('pt-BR') : '—';
+					const dataFechamento = comanda.dataFechamento ? new Date(comanda.dataFechamento).toLocaleString('pt-BR') : '—';
+
+					card.innerHTML = `
+						<div class="pedido-top">
+							<span class="pedido-id">Comanda #${comanda.id}</span>
+							<span class="chip-status">${comanda.status || '—'}</span>
+						</div>
+						<div class="pedido-body">
+							<p><strong>Mesa:</strong> ${comanda.mesa || 'N/D'}</p>
+							<p><strong>Abertura:</strong> ${dataAbertura}</p>
+							<p><strong>Fechamento:</strong> ${dataFechamento}</p>
+						</div>
+						<div class="card-actions">
+							<button class="btn-card btn-ghost" onclick='editarComanda(${comanda.id}, ${JSON.stringify(comanda.mesa || "")}, ${JSON.stringify(comanda.status || "")})'>
+								<i class="fas fa-pen"></i> Editar
+							</button>
+							<button class="btn-card btn-danger" onclick="excluirComanda(${comanda.id})">
+								<i class="fas fa-trash"></i> Excluir
+							</button>
+						</div>
+					`;
+
+					lista.appendChild(card);
+				});
+
+				lista.style.display = 'grid';
+
+			} catch (err) {
+				console.error('Erro:', err);
+				loading.style.display = 'none';
+				const listaComandas = document.getElementById('listaComandas');
+				listaComandas.innerHTML = '<div class="erro"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar comandas. Tente novamente.</div>';
+				listaComandas.style.display = 'block';
+			}
+		}
+
+		async function editarComanda(id, mesaAtual, statusAtual) {
+			const novaMesa = prompt('Mesa da comanda:', mesaAtual || '');
+			if (novaMesa === null) return;
+
+			const novoStatus = prompt('Status (aberta/fechada):', statusAtual || 'aberta');
+			if (novoStatus === null) return;
+
+			try {
+				const resp = await fetch(`${API_URL}/comandas/${id}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ mesa: novaMesa, status: novoStatus })
+				});
+
+				if (!resp.ok) {
+					const data = await resp.json().catch(() => ({}));
+					throw new Error(data.error || 'Erro ao editar comanda');
+				}
+
+				await resp.json();
+				carregarComandas();
+			} catch (err) {
+				alert(err.message);
+			}
+		}
+
+		async function excluirComanda(id) {
+			if (!confirm('Deseja excluir esta comanda?')) return;
+
+			try {
+				const resp = await fetch(`${API_URL}/comandas/${id}`, { method: 'DELETE' });
+
+				if (!resp.ok) {
+					const data = await resp.json().catch(() => ({}));
+					throw new Error(data.error || 'Erro ao excluir comanda');
+				}
+
+				carregarComandas();
+			} catch (err) {
+				alert(err.message);
+			}
+		}
+
+		carregarComandas();
+	</script>
+
+</body>
+</html>

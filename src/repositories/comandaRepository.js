@@ -2,29 +2,44 @@ import db from '../database/db.js';
 
 const comandaRepository = {
   getAll() {
-    const stmt = db.prepare(`
-      SELECT * FROM comanda
-    `);
+    const stmt = db.prepare('SELECT * FROM comandas');
     return stmt.all();
   },
 
   getById(id) {
-    const stmt = db.prepare('SELECT * FROM comanda WHERE id = ?');
+    const stmt = db.prepare('SELECT * FROM comandas WHERE id = ?');
     return stmt.get(id);
   },
 
-  create({ nomeCliente, mesa }) {
+  create({ mesa, status = 'aberta' }) {
     const stmt = db.prepare(`
-      INSERT INTO comanda (nomeCliente, mesa)
+      INSERT INTO comandas (mesa, status)
       VALUES (?, ?)
     `);
 
-    return stmt.run(nomeCliente, mesa);
+    return stmt.run(mesa, status);
+  },
+
+  update({ id, mesa, status, dataFechamento }) {
+    const stmt = db.prepare(`
+      UPDATE comandas
+      SET mesa = ?, status = ?, dataFechamento = ?
+      WHERE id = ?
+    `);
+    return stmt.run(mesa, status, dataFechamento, id);
+  },
+
+  delete(comandaId) {
+    const delLinks = db.prepare('DELETE FROM comanda_pedidos WHERE comandaId = ?');
+    delLinks.run(comandaId);
+
+    const stmt = db.prepare('DELETE FROM comandas WHERE id = ?');
+    return stmt.run(comandaId);
   },
 
   addPedido({ comandaId, pedidoId }) {
     const stmt = db.prepare(`
-      INSERT INTO comanda_itens (comandaId, pedidoId)
+      INSERT INTO comanda_pedidos (comandaId, pedidoId)
       VALUES (?, ?)
     `);
     return stmt.run(comandaId, pedidoId);
@@ -34,8 +49,8 @@ const comandaRepository = {
     const stmt = db.prepare(`
       SELECT p.*
       FROM pedidos p
-      JOIN comanda_itens ci ON ci.pedidoId = p.id
-      WHERE ci.comandaId = ?
+      JOIN comanda_pedidos cp ON cp.pedidoId = p.id
+      WHERE cp.comandaId = ?
     `);
     return stmt.all(comandaId);
   }
